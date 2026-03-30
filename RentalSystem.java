@@ -1,4 +1,11 @@
 import java.util.List;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -18,10 +25,40 @@ public class RentalSystem {
 
     public void addVehicle(Vehicle vehicle) {
         vehicles.add(vehicle);
+        saveVehicle(vehicle);
+    }
+    
+    public void saveVehicle(Vehicle vehicle) {
+    	File vehicles = new File("vehicles.txt");
+    	if (vehicles.exists()) {
+    		try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(vehicles, true));
+				writer.write(vehicle.getInfo());
+				writer.close();
+			} catch (IOException e) {
+				System.out.println("Error writing file");
+			}
+    	}
     }
 
     public void addCustomer(Customer customer) {
         customers.add(customer);
+        saveCustomer(customer);
+    }
+    
+    public void saveCustomer(Customer customer) {
+    	File customers = new File("customers.txt");
+    	if (customers.exists()) {
+    		try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(customers, true));
+				writer.write(customer.getCustomerName());
+				writer.write(customer.getCustomerId());
+				writer.close();
+			} catch (IOException e) {
+				System.out.println("Error writing file");
+			}
+    	}
+
     }
 
     public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
@@ -45,6 +82,22 @@ public class RentalSystem {
             System.out.println("Vehicle is not rented.");
         }
     }    
+    
+    public void saveRecord(RentalRecord rentalRecord) {
+    	File rentalRecords = new File("rentalRecords.txt");
+    	if (rentalRecords.exists()) {
+    		try {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(rentalRecords, true));
+				//for history : rentalHistory
+				//writer.write(rentalHistory[i]
+				writer.write(rentalHistory.getRentalHistory());
+				writer.close();
+			} catch (IOException e) {
+				System.out.println("Error writing file");
+			}
+    	}
+
+    }
 
     public void displayVehicles(Vehicle.VehicleStatus status) {
         // Display appropriate title based on status
