@@ -13,6 +13,7 @@ public class RentalSystem {
     private List<Vehicle> vehicles = new ArrayList<>();
     private List<Customer> customers = new ArrayList<>();
     private RentalHistory rentalHistory = new RentalHistory();
+    loadData();
     private static RentalSystem instance;
     
     
@@ -33,7 +34,11 @@ public class RentalSystem {
     	if (vehicles.exists()) {
     		try {
 				BufferedWriter writer = new BufferedWriter(new FileWriter(vehicles, true));
-				writer.write(vehicle.getInfo());
+				writer.write(vehicle.getLicensePlate());
+				writer.write(vehicle.getMake());
+				writer.write(vehicle.getModel());
+				writer.write(vehicle.getYear());
+				writer.write(vehicle.getStatus().toString());
 				writer.close();
 			} catch (IOException e) {
 				System.out.println("Error writing file");
@@ -51,8 +56,8 @@ public class RentalSystem {
     	if (customers.exists()) {
     		try {
 				BufferedWriter writer = new BufferedWriter(new FileWriter(customers, true));
-				writer.write(customer.getCustomerName());
 				writer.write(customer.getCustomerId());
+				writer.write(customer.getCustomerName());
 				writer.close();
 			} catch (IOException e) {
 				System.out.println("Error writing file");
@@ -66,6 +71,7 @@ public class RentalSystem {
             vehicle.setStatus(Vehicle.VehicleStatus.Rented);
             rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, amount, "RENT"));
             System.out.println("Vehicle rented to " + customer.getCustomerName());
+            saveRecord(record);
         }
         else {
             System.out.println("Vehicle is not available for renting.");
@@ -77,20 +83,23 @@ public class RentalSystem {
             vehicle.setStatus(Vehicle.VehicleStatus.Available);
             rentalHistory.addRecord(new RentalRecord(vehicle, customer, date, extraFees, "RETURN"));
             System.out.println("Vehicle returned by " + customer.getCustomerName());
+            saveRecord(record);
         }
         else {
             System.out.println("Vehicle is not rented.");
         }
     }    
     
-    public void saveRecord(RentalRecord rentalRecord) {
+    public void saveRecord(RentalRecord record) {
     	File rentalRecords = new File("rentalRecords.txt");
     	if (rentalRecords.exists()) {
     		try {
 				BufferedWriter writer = new BufferedWriter(new FileWriter(rentalRecords, true));
-				//for history : rentalHistory
-				//writer.write(rentalHistory[i]
-				writer.write(rentalHistory.getRentalHistory());
+	                    writer.write(record.getRecordType()); 
+	                    writer.write(record.getVehicle().getLicensePlate());
+	                    writer.write(record.getCustomer().getCustomerName());
+	                    writer.write(record.getRecordDate().toString());
+	                    writer.write(String.valueOf(record.getTotalAmount()));
 				writer.close();
 			} catch (IOException e) {
 				System.out.println("Error writing file");
@@ -166,6 +175,42 @@ public class RentalSystem {
             }
             System.out.println();
         }
+    }
+    private void loadData() {
+    	File rentalRecords = new File("rentalRecords.txt");
+    	if (rentalRecords.exists()) {
+    		try {
+				BufferedReader reader = new BufferedReader(new FileReader(rentalRecords));
+				rentalHistory = reader.read();
+				reader.read();
+				reader.close();
+			} catch (IOException e) {
+				System.out.println("Error reading file");
+			}
+    	}
+    	File vehicles = new File("vehicles.txt");
+    	if (vehicles.exists()) {
+    		try {
+				BufferedReader reader = new BufferedReader(new FileReader(vehicles));
+				Vehicle <vehicles> = reader.read();
+				reader.read();
+				reader.close();
+			} catch (IOException e) {
+				System.out.println("Error reading file");
+			}
+    	}
+    	File customers = new File("customers.txt");
+    	if (customers.exists()) {
+    		try {
+				BufferedReader reader = new BufferedReader(new FileReader(customers));
+				customers = reader.read();
+				reader.read();
+				reader.close();
+			} catch (IOException e) {
+				System.out.println("Error reading file");
+			}
+    	}
+
     }
     
     public Vehicle findVehicleByPlate(String plate) {
